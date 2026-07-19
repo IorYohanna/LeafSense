@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/security/JwtAuthFilter.java
 package com.plantapp.security;
 
 import jakarta.servlet.FilterChain;

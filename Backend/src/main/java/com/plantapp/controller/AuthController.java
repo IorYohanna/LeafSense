@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/controller/AuthController.java
 package com.plantapp.controller;
 
 import com.plantapp.dto.AuthRequest;

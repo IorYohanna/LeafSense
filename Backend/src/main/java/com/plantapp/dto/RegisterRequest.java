@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/dto/RegisterRequest.java
 package com.plantapp.dto;
 
 import jakarta.validation.constraints.Email;

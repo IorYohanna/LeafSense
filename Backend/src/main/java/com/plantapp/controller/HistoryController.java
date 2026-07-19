@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/controller/HistoryController.java
 package com.plantapp.controller;
 
 import com.plantapp.dto.ScanHistoryRequest;

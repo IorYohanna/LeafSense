@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/config/CorsConfig.java
 package com.plantapp.config;
 
 import org.springframework.beans.factory.annotation.Value;

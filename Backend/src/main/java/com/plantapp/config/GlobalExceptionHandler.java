@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/config/GlobalExceptionHandler.java
 package com.plantapp.config;
 
 import com.plantapp.dto.ErrorResponse;

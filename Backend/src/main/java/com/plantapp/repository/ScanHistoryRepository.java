@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/repository/ScanHistoryRepository.java
 package com.plantapp.repository;
 
 import com.plantapp.entity.ScanHistory;

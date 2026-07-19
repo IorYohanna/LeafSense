@@ -1,3 +1,4 @@
+// 
 package com.plantapp.entity;
 
 import jakarta.persistence.*;

@@ -32,7 +32,7 @@ export function ResultScreen({ route, navigation }: Props) {
         if (cancelled) return;
         setPlant(detail);
 
-        // Ecriture locale immediate (etape 7 du pipeline), avant meme de savoir
+        // Ecriture locale immediate, avant meme de savoir
         // si la synchronisation reussira.
         await localDb.insertScan({
           localUuid: uuid.v4() as string,
@@ -44,7 +44,7 @@ export function ResultScreen({ route, navigation }: Props) {
         });
         setSaved(true);
 
-        // Tentative de sync differee si connecte + en ligne (etape 8), en tache de fond.
+        // Tentative de sync differee si connecte + en ligne , en tache de fond.
         trySyncPendingScans();
       } catch (error) {
         if (!cancelled) {

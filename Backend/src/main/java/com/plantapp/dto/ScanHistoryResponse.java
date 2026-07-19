@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/dto/ScanHistoryResponse.java
 package com.plantapp.dto;
 
 import com.plantapp.entity.ScanHistory;

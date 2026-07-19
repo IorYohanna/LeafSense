@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/security/JwtService.java
 package com.plantapp.security;
 
 import io.jsonwebtoken.Claims;

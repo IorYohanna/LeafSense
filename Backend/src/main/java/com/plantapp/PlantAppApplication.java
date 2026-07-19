@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/PlantAppApplication.java
 package com.plantapp;
 
 import org.springframework.boot.SpringApplication;

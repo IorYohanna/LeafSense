@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/service/HistoryService.java
 package com.plantapp.service;
 
 import com.plantapp.dto.ScanHistoryRequest;

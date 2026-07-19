@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/dto/PlantResponse.java
 package com.plantapp.dto;
 
 import com.plantapp.entity.Plant;

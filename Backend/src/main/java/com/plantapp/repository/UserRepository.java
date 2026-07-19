@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/repository/UserRepository.java
 package com.plantapp.repository;
 
 import com.plantapp.entity.User;

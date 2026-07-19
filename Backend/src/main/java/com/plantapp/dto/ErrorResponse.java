@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/dto/ErrorResponse.java
 package com.plantapp.dto;
 
 import java.time.Instant;

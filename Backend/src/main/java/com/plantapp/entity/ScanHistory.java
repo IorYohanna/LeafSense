@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/entity/ScanHistory.java
 package com.plantapp.entity;
 
 import jakarta.persistence.*;

@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/security/CustomUserDetailsService.java 
 package com.plantapp.security;
 
 import com.plantapp.repository.UserRepository;

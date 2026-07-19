@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/repository/PlantRepository.java
 package com.plantapp.repository;
 
 import com.plantapp.entity.Plant;

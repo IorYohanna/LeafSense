@@ -1,3 +1,4 @@
+// Backend/src/main/java/com/plantapp/config/SecurityConfig.java
 package com.plantapp.config;
 
 import com.plantapp.security.JwtAuthFilter;
