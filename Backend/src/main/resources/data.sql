@@ -1,0 +1,26 @@
+-- Seed de demonstration : 15 plantes d'interieur, alignees sur le dataset Kaggle
+-- "House Plant Species" (kacpergregorowicz/house-plant-species) utilise pour
+-- entrainer le modele TFLite via Teachable Machine.
+-- IMPORTANT : chaque "scientific_name" doit correspondre EXACTEMENT (casse incluse)
+-- au nom de classe cree dans Teachable Machine, qui devient une ligne de labels.txt.
+-- Executes seulement si la table est vide, pour eviter les doublons au redemarrage.
+
+INSERT INTO plants (common_name, scientific_name, difficulty_level, toxicity_humans, toxicity_dogs, toxicity_cats, watering_info, light_requirement, climate_info, max_height_cm, leaf_type, planting_period)
+SELECT * FROM (VALUES
+    ('Monstera', 'Monstera deliciosa', 'facile', 'Toxique si ingere', 'Toxique', 'Toxique', 'Arroser quand les 2-3 premiers cm de terre sont secs, environ 1 fois/semaine', 'Lumiere indirecte vive', 'Interieur, 18-27C, evite les courants d''air froid', 200, 'Feuille perforee persistante', 'Printemps a ete'),
+    ('Pothos', 'Epipremnum aureum', 'facile', 'Toxique si ingere', 'Toxique', 'Toxique', 'Laisser secher le terreau entre deux arrosages, tolere l''oubli', 'Lumiere faible a moderee', 'Interieur, 15-29C, tres tolerant', 300, 'Feuille en coeur panachee', 'Toute l''annee'),
+    ('Sansevieria (langue de belle-mere)', 'Dracaena trifasciata', 'facile', 'Legerement toxique', 'Toxique', 'Toxique', 'Arroser toutes les 2-3 semaines, tres tolerant a la secheresse', 'Faible a forte lumiere', 'Interieur, 15-30C, resiste a la secheresse', 120, 'Feuille rigide dressee', 'Toute l''annee'),
+    ('Caoutchouc (Ficus)', 'Ficus elastica', 'facile', 'Legerement toxique (seve irritante)', 'Toxique', 'Toxique', 'Arroser quand la surface est seche, environ 1 fois/semaine', 'Lumiere indirecte vive', 'Interieur, 18-27C, sensible aux courants d''air froid', 250, 'Grande feuille brillante et epaisse', 'Printemps a ete'),
+    ('Aloe vera', 'Aloe vera', 'facile', 'Peut irriter en cas d''ingestion', 'Toxique', 'Toxique', 'Arroser abondamment puis laisser secher completement, toutes les 2-3 semaines', 'Forte lumiere directe', 'Interieur/exterieur, 13-27C, aime la chaleur seche', 60, 'Feuille charnue succulente', 'Printemps a ete'),
+    ('Calathea rayée', 'Calathea lancifolia', 'difficile', 'Non toxique', 'Non toxique', 'Non toxique', 'Garder le terreau legerement humide en permanence, eau non calcaire de preference', 'Lumiere indirecte moderee', 'Interieur, 18-24C, humidite elevee requise', 90, 'Feuille rayee decorative', 'Printemps'),
+    ('ZZ Plant', 'Zamioculcas zamiifolia', 'facile', 'Toxique si ingere', 'Toxique', 'Toxique', 'Arroser toutes les 2-3 semaines, tres tolerant a l''oubli', 'Faible a moderee', 'Interieur, 18-26C, tres tolerant', 90, 'Feuille brillante charnue', 'Toute l''annee'),
+    ('Cactus de Noël', 'Schlumbergera bridgesii', 'facile', 'Non toxique', 'Non toxique', 'Non toxique', 'Arroser quand le terreau est sec en surface, reduire en hiver', 'Lumiere indirecte vive', 'Interieur, 15-24C', 40, 'Tige segmentee succulente', 'Automne (floraison hiver)'),
+    ('Violette africaine', 'Saintpaulia ionantha', 'modere', 'Non toxique', 'Non toxique', 'Non toxique', 'Arroser par le bas pour eviter de mouiller les feuilles, garder legerement humide', 'Lumiere indirecte vive', 'Interieur, 18-24C, humidite moderee', 30, 'Feuille duveteuse ronde', 'Toute l''annee'),
+    ('Dieffenbachia (canne muette)', 'Dieffenbachia seguine', 'modere', 'Toxique si ingere (irritant buccal)', 'Toxique', 'Toxique', 'Arroser quand la surface est seche, eviter l''exces d''eau', 'Lumiere indirecte moderee', 'Interieur, 18-27C, humidite moderee', 150, 'Grande feuille panachee', 'Printemps a ete'),
+    ('Fougère de Boston', 'Nephrolepis exaltata', 'modere', 'Non toxique', 'Non toxique', 'Non toxique', 'Garder le terreau constamment humide, brumiser regulierement', 'Lumiere indirecte moderee', 'Interieur, 16-24C, humidite elevee', 90, 'Feuille dentelee retombante', 'Printemps'),
+    ('Pied d''elephant (Ponytail Palm)', 'Beaucarnea recurvata', 'facile', 'Non toxique', 'Non toxique', 'Non toxique', 'Arroser rarement, laisser secher completement entre arrosages', 'Forte lumiere directe', 'Interieur, 15-29C, aime la secheresse', 150, 'Feuille fine en ruban', 'Toute l''annee'),
+    ('Yucca', 'Yucca elephantipes', 'facile', 'Toxique si ingere', 'Toxique', 'Toxique', 'Arroser toutes les 2-3 semaines, tolere la secheresse', 'Forte lumiere directe', 'Interieur, 15-27C', 250, 'Feuille rigide en lance', 'Printemps a ete'),
+    ('Anthurium', 'Anthurium andraeanum', 'modere', 'Toxique si ingere', 'Toxique', 'Toxique', 'Arroser quand la surface est seche, eviter l''exces d''eau', 'Lumiere indirecte vive', 'Interieur, 18-27C, humidite elevee', 60, 'Feuille brillante en coeur', 'Toute l''annee'),
+    ('Palmier nain (Parlor Palm)', 'Chamaedorea elegans', 'facile', 'Non toxique', 'Non toxique', 'Non toxique', 'Garder le terreau legerement humide, ne pas laisser secher completement', 'Lumiere faible a moderee', 'Interieur, 18-27C, humidite moderee', 120, 'Feuille pennee fine', 'Printemps')
+) AS seed(common_name, scientific_name, difficulty_level, toxicity_humans, toxicity_dogs, toxicity_cats, watering_info, light_requirement, climate_info, max_height_cm, leaf_type, planting_period)
+WHERE NOT EXISTS (SELECT 1 FROM plants);
