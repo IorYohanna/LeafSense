@@ -1,3 +1,4 @@
+// Frontend/src/screens/MyPlantsScreen.tsx
 import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, Pressable, RefreshControl } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';

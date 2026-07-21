@@ -1,3 +1,4 @@
+// Frontend/src/services/localDb.ts
 import * as SQLite from 'expo-sqlite';
 import { ScanRecord } from '@/types';
 

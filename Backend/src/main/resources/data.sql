@@ -1,9 +1,3 @@
--- Seed de demonstration : 15 plantes d'interieur, alignees sur le dataset Kaggle
--- "House Plant Species" (kacpergregorowicz/house-plant-species) utilise pour
--- entrainer le modele TFLite via Teachable Machine.
--- IMPORTANT : chaque "scientific_name" doit correspondre EXACTEMENT (casse incluse)
--- au nom de classe cree dans Teachable Machine, qui devient une ligne de labels.txt.
--- Executes seulement si la table est vide, pour eviter les doublons au redemarrage.
 
 INSERT INTO plants (common_name, scientific_name, difficulty_level, toxicity_humans, toxicity_dogs, toxicity_cats, watering_info, light_requirement, climate_info, max_height_cm, leaf_type, planting_period)
 SELECT * FROM (VALUES

@@ -1,3 +1,5 @@
+Frontend/assets/model/labels.txt
+
 0 Monstera deliciosa
 1 Epipremnum aureum
 2 Dracaena trifasciata

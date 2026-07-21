@@ -1,3 +1,4 @@
+// Frontend/src/services/syncService.ts
 import NetInfo from '@react-native-community/netinfo';
 import { localDb } from './localDb';
 import { api } from './api';

@@ -1,4 +1,4 @@
-// 
+//  Backend/src/main/java/com/plantapp/entity/Plant.java
 package com.plantapp.entity;
 
 import jakarta.persistence.*;

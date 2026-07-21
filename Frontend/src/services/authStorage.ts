@@ -1,3 +1,4 @@
+// Frontend/src/services/authStorage.ts
 import * as SecureStore from 'expo-secure-store';
 
 const TOKEN_KEY = 'plantapp_jwt_token';
