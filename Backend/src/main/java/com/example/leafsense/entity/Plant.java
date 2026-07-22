@@ -1,4 +1,4 @@
-package com.example.leafsense.entity;
+package com.example.leafsense.Entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
