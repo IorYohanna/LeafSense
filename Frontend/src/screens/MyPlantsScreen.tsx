@@ -6,8 +6,10 @@ import { ScanRecord } from '@/types';
 import { colors, spacing, typography, radius } from '@/theme/theme';
 import { localDb } from '@/services/localDb';
 import { trySyncPendingScans } from '@/services/syncService';
+import { useAuth } from '@/context/AuthContext';
 
 export function MyPlantsScreen({ navigation }: any) {
+  const { isLoggedIn } = useAuth();
   const [scans, setScans] = useState<ScanRecord[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -32,9 +34,10 @@ export function MyPlantsScreen({ navigation }: any) {
   if (scans.length === 0) {
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyTitle}>Aucune plante identifiée pour l&apos;instant</Text>
+        <Text style={styles.emptyIcon}>🌱</Text>
+        <Text style={styles.emptyTitle}>Aucune plante identifiée pour l'instant</Text>
         <Text style={typography.bodySecondary}>
-          Va dans l&apos;onglet « Scan » et vise une plante avec ton appareil photo.
+          Va dans l'onglet « Scan » et vise une plante avec ton appareil photo.
         </Text>
       </View>
     );
@@ -49,43 +52,44 @@ export function MyPlantsScreen({ navigation }: any) {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.forest} />
       }
-      renderItem={({ item }) => (
-        <Pressable
-          style={styles.card}
-          onPress={() =>
-            navigation
-              .getParent()
-              ?.navigate('PlantDetail', { scientificName: item.scientificName })
-          }
-        >
-          {item.photoUri ? (
-            <Image source={{ uri: item.photoUri }} style={styles.thumbnail} />
-          ) : (
-            <View style={[styles.thumbnail, styles.thumbnailPlaceholder]} />
-          )}
+      renderItem={({ item }) => {
+        // En mode invité, on distingue donc explicitement "Local uniquement".
+        const badgeLabel = item.synced ? 'Synchronisé' : isLoggedIn ? 'En attente' : 'Local uniquement';
+        const badgeColor = item.synced ? colors.success : isLoggedIn ? colors.warning : colors.moss;
 
-          <View style={styles.cardBody}>
-            <Text style={styles.scientificName}>{item.scientificName}</Text>
-            <Text style={styles.commonName}>{item.commonName}</Text>
-            <Text style={styles.date}>
-              {new Date(item.scannedAt).toLocaleDateString('fr-FR', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric',
-              })}
-            </Text>
-          </View>
-
-          <View
-            style={[
-              styles.syncBadge,
-              { backgroundColor: item.synced ? colors.success : colors.warning },
-            ]}
+        return (
+          <Pressable
+            style={styles.card}
+            onPress={() =>
+              navigation
+                .getParent()
+                ?.navigate('PlantDetail', { scientificName: item.scientificName })
+            }
           >
-            <Text style={styles.syncBadgeText}>{item.synced ? 'Synchronisé' : 'En attente'}</Text>
-          </View>
-        </Pressable>
-      )}
+            {item.photoUri ? (
+              <Image source={{ uri: item.photoUri }} style={styles.thumbnail} />
+            ) : (
+              <View style={[styles.thumbnail, styles.thumbnailPlaceholder]} />
+            )}
+
+            <View style={styles.cardBody}>
+              <Text style={styles.scientificName}>{item.scientificName}</Text>
+              <Text style={styles.commonName}>{item.commonName}</Text>
+              <Text style={styles.date}>
+                {new Date(item.scannedAt).toLocaleDateString('fr-FR', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric',
+                })}
+              </Text>
+            </View>
+
+            <View style={[styles.syncBadge, { backgroundColor: badgeColor }]}>
+              <Text style={styles.syncBadgeText}>{badgeLabel}</Text>
+            </View>
+          </Pressable>
+        );
+      }}
     />
   );
 }
@@ -100,6 +104,10 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     gap: spacing.xs,
     backgroundColor: colors.background,
+  },
+  emptyIcon: {
+    fontSize: 40,
+    marginBottom: spacing.xs,
   },
   emptyTitle: {
     ...typography.h2,
@@ -116,6 +124,11 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     borderWidth: 1,
     borderColor: colors.border,
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
   },
   thumbnail: {
     width: 56,

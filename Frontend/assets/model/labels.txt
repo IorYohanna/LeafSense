@@ -1,6 +1,6 @@
 0 Monstera deliciosa
-1 Epipremnum aureum
-2 Dracaena trifasciata
+1 Maranta leuconeura
+2 Pilea peperomioides
 3 Ficus elastica
 4 Aloe vera
 5 Calathea lancifolia
@@ -9,7 +9,7 @@
 8 Saintpaulia ionantha
 9 Dieffenbachia seguine
 10 Nephrolepis exaltata
-11 Beaucarnea recurvata
-12 Yucca elephantipes
+11 Convallaria majalis
+12 Crassula ovata
 13 Anthurium andraeanum
 14 Chamaedorea elegans

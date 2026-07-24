@@ -15,10 +15,12 @@ import { colors, spacing, typography, radius, fonts } from '@/theme/theme';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { api, extractApiErrorMessage } from '@/services/api';
 import { authStorage } from '@/services/authStorage';
+import { useAuth } from '@/context/AuthContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 export function LoginScreen({ navigation }: Props) {
+  const { refresh } = useAuth();
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,6 +28,13 @@ export function LoginScreen({ navigation }: Props) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const isRegister = mode === 'register';
+  // Si on peut revenir en arriere, c'est qu'on a ete ouvert depuis l'onglet Profil
+  // (utilisateur deja en mode invite) : l'acces invite n'a alors plus de sens ici.
+  const openedFromProfile = navigation.canGoBack();
+
+  function handleGuestAccess() {
+    navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
+  }
 
   async function handleSubmit() {
     if (!email.trim() || !password.trim()) {
@@ -42,6 +51,9 @@ export function LoginScreen({ navigation }: Props) {
         : await api.login(email.trim(), password);
 
       await authStorage.saveSession(response.token, response.email);
+      // Propage immediatement le nouvel etat de connexion a tout le reste de l'app
+      // (onglet Profil, badges de synchronisation, etc.).
+      await refresh();
       navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
     } catch (error) {
       setErrorMessage(
@@ -63,17 +75,48 @@ export function LoginScreen({ navigation }: Props) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={styles.container}>
+        {openedFromProfile && (
+          <Pressable onPress={() => navigation.goBack()} style={styles.backButton} hitSlop={12}>
+            <Text style={styles.backButtonText}>‹ Retour</Text>
+          </Pressable>
+        )}
+
         <Text style={styles.eyebrow}>PLANT SCANNER</Text>
         <Text style={styles.title}>
           {isRegister ? 'Crée ton carnet de terrain' : 'Content de te revoir'}
         </Text>
         <Text style={typography.bodySecondary}>
           {isRegister
-            ? 'Un compte pour retrouver l\'historique de tes identifications, sur tous tes appareils.'
+            ? "Un compte pour retrouver l'historique de tes identifications, sur tous tes appareils."
             : 'Connecte-toi pour retrouver tes plantes identifiées.'}
         </Text>
 
-        <View style={styles.form}>
+        <View style={styles.card}>
+          <View style={styles.segmentedControl}>
+            <Pressable
+              onPress={() => {
+                setErrorMessage(null);
+                setMode('login');
+              }}
+              style={[styles.segment, !isRegister && styles.segmentActive]}
+            >
+              <Text style={[styles.segmentText, !isRegister && styles.segmentTextActive]}>
+                Se connecter
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                setErrorMessage(null);
+                setMode('register');
+              }}
+              style={[styles.segment, isRegister && styles.segmentActive]}
+            >
+              <Text style={[styles.segmentText, isRegister && styles.segmentTextActive]}>
+                S'inscrire
+              </Text>
+            </Pressable>
+          </View>
+
           <TextInput
             style={styles.input}
             placeholder="Email"
@@ -100,21 +143,16 @@ export function LoginScreen({ navigation }: Props) {
             loading={loading}
             style={{ marginTop: spacing.md }}
           />
+        </View>
 
-          <Pressable
-            onPress={() => {
-              setErrorMessage(null);
-              setMode(isRegister ? 'login' : 'register');
-            }}
-            style={styles.switchModeButton}
-          >
-            <Text style={styles.switchModeText}>
-              {isRegister
-                ? 'Déjà un compte ? Se connecter'
-                : "Pas encore de compte ? S'inscrire"}
+        {!openedFromProfile && (
+          <Pressable onPress={handleGuestAccess} style={styles.guestButton}>
+            <Text style={styles.guestButtonText}>Continuer sans compte</Text>
+            <Text style={styles.guestButtonSubtext}>
+              L'historique restera uniquement sur cet appareil, sans synchronisation.
             </Text>
           </Pressable>
-        </View>
+        )}
       </View>
     </KeyboardAvoidingView>
   );
@@ -127,6 +165,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: spacing.lg,
   },
+  backButton: {
+    position: 'absolute',
+    top: spacing.xl,
+    left: spacing.lg,
+  },
+  backButtonText: {
+    fontFamily: fonts.bodyMedium,
+    fontSize: 15,
+    color: colors.forest,
+  },
   eyebrow: {
     ...typography.label,
     marginBottom: spacing.sm,
@@ -135,11 +183,45 @@ const styles = StyleSheet.create({
     ...typography.h1,
     marginBottom: spacing.sm,
   },
-  form: {
+  card: {
     marginTop: spacing.xl,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 2,
+  },
+  segmentedControl: {
+    flexDirection: 'row',
+    backgroundColor: colors.surfaceMuted,
+    borderRadius: radius.md,
+    padding: 4,
+    marginBottom: spacing.lg,
+  },
+  segment: {
+    flex: 1,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.sm,
+    alignItems: 'center',
+  },
+  segmentActive: {
+    backgroundColor: colors.forest,
+  },
+  segmentText: {
+    fontFamily: fonts.bodyMedium,
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  segmentTextActive: {
+    color: colors.textOnDark,
   },
   input: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.background,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.md,
@@ -156,13 +238,22 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginBottom: spacing.sm,
   },
-  switchModeButton: {
+  guestButton: {
     marginTop: spacing.lg,
+    paddingTop: spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
     alignItems: 'center',
   },
-  switchModeText: {
+  guestButtonText: {
     fontFamily: fonts.bodyMedium,
     fontSize: 14,
-    color: colors.forest,
+    color: colors.moss,
+  },
+  guestButtonSubtext: {
+    ...typography.bodySecondary,
+    fontSize: 12,
+    textAlign: 'center',
+    marginTop: 4,
   },
 });

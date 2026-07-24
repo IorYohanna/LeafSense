@@ -1,8 +1,9 @@
+// Frontend/src/components/SpecimenTag.tsx
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, radius, spacing, typography } from '@/theme/theme';
+import { colors, radius, spacing, fonts } from '@/theme/theme';
 
-type Tone = 'neutral' | 'danger' | 'success' | 'warning';
+type Tone = 'neutral' | 'success' | 'danger';
 
 interface SpecimenTagProps {
   label: string;
@@ -10,43 +11,41 @@ interface SpecimenTagProps {
   tone?: Tone;
 }
 
-const toneColors: Record<Tone, string> = {
-  neutral: colors.moss,
-  danger: colors.danger,
-  success: colors.success,
-  warning: colors.warning,
+const toneStyles: Record<Tone, { bg: string; text: string }> = {
+  neutral: { bg: colors.surfaceMuted, text: colors.moss },
+  success: { bg: '#E4EFE3', text: colors.success },
+  danger: { bg: '#F4E1DE', text: colors.danger },
 };
 
-/**
- * Element signature de l'app : reprend le style d'une etiquette de planche
- * botanique (libelle en petites capitales + valeur), utilise pour la toxicite,
- * la difficulte et le score de confiance. Un seul style, reutilise partout,
- * plutot qu'invente a chaque ecran.
- */
 export function SpecimenTag({ label, value, tone = 'neutral' }: SpecimenTagProps) {
-  const accent = toneColors[tone];
+  const { bg, text } = toneStyles[tone];
 
   return (
-    <View style={[styles.container, { borderColor: accent }]}>
-      <Text style={[typography.label, { color: accent }]}>{label.toUpperCase()}</Text>
-      <Text style={styles.value}>{value}</Text>
+    <View style={[styles.container, { backgroundColor: bg }]}>
+      <Text style={[styles.label, { color: text }]}>{label}</Text>
+      <Text style={[styles.value, { color: text }]} numberOfLines={2}>
+        {value}
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 1,
-    borderRadius: radius.sm,
-    paddingVertical: spacing.xs,
+    flex: 1,
+    borderRadius: radius.md,
+    paddingVertical: spacing.sm,
     paddingHorizontal: spacing.sm,
-    backgroundColor: colors.surface,
-    minWidth: 90,
+  },
+  label: {
+    fontFamily: fonts.bodySemiBold,
+    fontSize: 10,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    marginBottom: 2,
   },
   value: {
-    fontFamily: typography.body.fontFamily,
-    fontSize: 14,
-    color: colors.textPrimary,
-    marginTop: 2,
+    fontFamily: fonts.bodyMedium,
+    fontSize: 13,
   },
 });

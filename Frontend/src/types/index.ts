@@ -59,10 +59,13 @@ export type RootStackParamList = {
   Login: undefined;
   Main: undefined;
   Result: { photoUri: string; scientificName: string; confidence: number };
-  PlantDetail: { scientificName: string; fromLocalUuid?: string };
+  // Note : le champ "fromLocalUuid" precedemment present ici n'etait jamais lu
+  // nulle part dans l'app (mort-code) ; il a ete retire pour eviter la confusion.
+  PlantDetail: { scientificName: string };
 };
 
 export type MainTabParamList = {
   Scan: undefined;
   MyPlants: undefined;
+  Profile: undefined;
 };

@@ -19,9 +19,7 @@ public class CorsConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        // "*" en dev : l'app mobile appelle le backend depuis un autre appareil sur le meme reseau.
-        // A restreindre a des origines precises si un jour ce projet devient reel.
+        
         configuration.setAllowedOriginPatterns(List.of(allowedOrigins));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+// Frontend/src/navigation/AppNavigator.tsx
+import React, { useEffect } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
 import { colors } from '@/theme/theme';
-import { authStorage } from '@/services/authStorage';
+import { useAuth } from '@/context/AuthContext';
 import { subscribeToConnectivityChanges, trySyncPendingScans } from '@/services/syncService';
 import { LoginScreen } from '@/screens/LoginScreen';
 import { ResultScreen } from '@/screens/ResultScreen';
@@ -14,22 +15,19 @@ import { MainTabs } from './MainTabs';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function AppNavigator() {
-  const [checkingSession, setCheckingSession] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // isReady/isLoggedIn viennent du AuthProvider : contrairement a l'ancienne
+  // verification locale au montage, l'etat est desormais partage et se met a jour
+  // immediatement partout dans l'app des qu'un logout/login est declenche.
+  const { isReady, isLoggedIn } = useAuth();
 
   useEffect(() => {
-    authStorage.isLoggedIn().then((loggedIn) => {
-      setIsLoggedIn(loggedIn);
-      setCheckingSession(false);
-    });
-
     // Tente une synchronisation au demarrage, puis a chaque changement de connectivite.
     trySyncPendingScans();
     const unsubscribe = subscribeToConnectivityChanges();
     return unsubscribe;
   }, []);
 
-  if (checkingSession) {
+  if (!isReady) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background }}>
         <ActivityIndicator color={colors.forest} size="large" />

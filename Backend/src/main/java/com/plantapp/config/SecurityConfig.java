@@ -35,7 +35,17 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/plants/**").permitAll()  
+                        .anyRequest().authenticated()                     
+                )
+                .exceptionHandling(ex -> ex
+                    .authenticationEntryPoint((req, res, e) -> {
+                        res.setStatus(401);
+                        res.setContentType("application/json");
+                        res.getWriter().write("""
+                            {"status":401,"error":"Non authentifie","messages":["Token invalide ou absent"],"path":"%s"}
+                            """.formatted(req.getRequestURI()));
+                    })
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

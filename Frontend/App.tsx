@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
 import { AppNavigator } from '@/navigation/AppNavigator';
+import { AuthProvider } from '@/context/AuthContext';
 import { useAppFonts } from '@/theme/useAppFonts';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -28,7 +29,9 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <StatusBar style="dark" />
-      <AppNavigator />
+      <AuthProvider>
+        <AppNavigator />
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }
