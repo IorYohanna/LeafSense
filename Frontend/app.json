@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "LeafSense",
+    "name": "Frontend",
     "slug": "leafsense",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -32,8 +32,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
-      ],
-      ["react-native-fast-tflite", { "enableAndroidGpuLibraries": true }]
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
