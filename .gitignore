@@ -1,0 +1,73 @@
+# ============================================
+# GÉNÉRAL / OS
+# ============================================
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.local
+.env.*.local
+
+# ============================================
+# BACKEND — Spring Boot / Maven / Java
+# ============================================
+Backend/target/
+Backend/.mvn/wrapper/maven-wrapper.jar
+Backend/*.class
+Backend/*.jar
+Backend/*.war
+Backend/HELP.md
+Backend/.classpath
+Backend/.project
+Backend/.settings/
+Backend/bin/
+
+# IDE Java
+Backend/.idea/
+Backend/*.iml
+Backend/.vscode/
+
+# ============================================
+# FRONTEND — Expo / React Native / Node
+# ============================================
+Frontend/node_modules/
+Frontend/.expo/
+Frontend/dist/
+Frontend/web-build/
+Frontend/expo-env.d.ts
+
+# Native build folders (générés par prebuild, ne jamais commiter)
+Frontend/android/
+Frontend/ios/
+
+# Cache Metro / Babel
+Frontend/node_modules/
+Frontend/.metro-cache/
+
+# EAS
+Frontend/.easrc
+
+# Logs npm/yarn
+Frontend/npm-debug.*
+Frontend/yarn-debug.*
+Frontend/yarn-error.*
+Frontend/.pnpm-debug.log*
+
+# ============================================
+# IDE / ÉDITEURS (racine du projet)
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ============================================
+# SECRETS — ne jamais commiter
+# ============================================
+**/application-local.properties
+**/*.keystore
+**/*.jks
+Frontend/google-services.json
+Frontend/GoogleService-Info.plist
+
+
