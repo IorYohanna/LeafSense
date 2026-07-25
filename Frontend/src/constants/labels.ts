@@ -1,0 +1,17 @@
+export const LABELS: string[] = [
+  'Monstera deliciosa',
+  'Maranta leuconeura',
+  'Pilea peperomioides',
+  'Ficus elastica',
+  'Aloe vera',
+  'Calathea lancifolia',
+  'Zamioculcas zamiifolia',
+  'Schlumbergera bridgesii',
+  'Saintpaulia ionantha',
+  'Dieffenbachia seguine',
+  'Nephrolepis exaltata',
+  'Convallaria majalis',
+  'Crassula ovata',
+  'Anthurium andraeanum',
+  'Chamaedorea elegans',
+];

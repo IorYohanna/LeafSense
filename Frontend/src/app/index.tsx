@@ -1,98 +1,207 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  StatusBar,
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
+import { useTensorflowModel } from 'react-native-fast-tflite';
+import jpeg from 'jpeg-js';
+import { Buffer } from 'buffer';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { LABELS } from '../constants/labels';
+import { API_URL } from '../constants/api';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
+interface CareInstruction {
+  wateringFrequency?: string;
+  sunlightNeeds?: string;
+}
+interface ToxicityInfo {
+  toxicToCats?: boolean;
+}
+interface PlantDTO {
+  scientificName: string;
+  commonName: string;
+  careInstruction?: CareInstruction;
+  toxicityInfo?: ToxicityInfo;
 }
 
 export default function HomeScreen() {
+  const model = useTensorflowModel(require('../../assets/models/plant_model.tflite'), []);
+
+  const [imageUri, setImageUri] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{ label: string; confidence: number } | null>(null);
+  const [plantInfo, setPlantInfo] = useState<PlantDTO | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState(false);
+
+  const resetState = () => {
+    setError(null);
+    setResult(null);
+    setPlantInfo(null);
+    setNotFound(false);
+  };
+
+  const pickImage = async (fromCamera: boolean) => {
+    resetState();
+
+    const permission = fromCamera
+      ? await ImagePicker.requestCameraPermissionsAsync()
+      : await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permission.granted) {
+      setError('Permission refusée');
+      return;
+    }
+
+    const pickerResult = fromCamera
+      ? await ImagePicker.launchCameraAsync({ quality: 1 })
+      : await ImagePicker.launchImageLibraryAsync({ quality: 1 });
+
+    if (pickerResult.canceled) return;
+
+    const uri = pickerResult.assets[0].uri;
+    setImageUri(uri);
+    await runInference(uri);
+  };
+
+  const runInference = async (uri: string) => {
+    if (model.state !== 'loaded') {
+      setError('Modèle pas encore chargé, réessayez dans un instant');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const manipulated = await ImageManipulator.manipulateAsync(
+        uri,
+        [{ resize: { width: 224, height: 224 } }],
+        { base64: true, format: ImageManipulator.SaveFormat.JPEG }
+      );
+
+      const buffer = Buffer.from(manipulated.base64!, 'base64');
+      const decoded = jpeg.decode(buffer, { useTArray: true });
+
+      const { width, height, data } = decoded;
+      const input = new Float32Array(width * height * 3);
+      let j = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        input[j++] = data[i] / 255;
+        input[j++] = data[i + 1] / 255;
+        input[j++] = data[i + 2] / 255;
+      }
+
+      const outputs = model.model!.runSync([input.buffer]);
+      const scores = new Float32Array(outputs[0] as ArrayBuffer);
+
+      let maxIndex = 0;
+      for (let i = 1; i < scores.length; i++) {
+        if (scores[i] > scores[maxIndex]) maxIndex = i;
+      }
+
+      const label = LABELS[maxIndex];
+      const confidence = scores[maxIndex];
+      setResult({ label, confidence });
+
+      await fetchPlantInfo(label);
+    } catch (e: any) {
+      setError('Erreur inférence : ' + e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchPlantInfo = async (scientificName: string) => {
+    try {
+      const res = await fetch(`${API_URL}/plants/${encodeURIComponent(scientificName)}`);
+      if (res.status === 404) {
+        setNotFound(true);
+        return;
+      }
+      if (!res.ok) throw new Error(`Backend a répondu ${res.status}`);
+      const data: PlantDTO = await res.json();
+      setPlantInfo(data);
+    } catch (e: any) {
+      setError('Erreur backend : ' + e.message);
+    }
+  };
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    <ScrollView contentContainerStyle={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      <Text style={styles.title}>🌿 LeafSense</Text>
+      <Text style={styles.subtitle}>Test caméra/galerie → TFLite → Backend</Text>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+      {model.state === 'loading' && <Text style={styles.muted}>Chargement du modèle...</Text>}
+      {model.state === 'error' && <Text style={styles.error}>Erreur de chargement du modèle .tflite</Text>}
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+      <View style={styles.buttonRow}>
+        <TouchableOpacity style={styles.buttonPrimary} onPress={() => pickImage(true)}>
+          <Text style={styles.buttonText}>📷 Caméra</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.buttonSecondary} onPress={() => pickImage(false)}>
+          <Text style={styles.buttonText}>🖼️ Galerie</Text>
+        </TouchableOpacity>
+      </View>
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+      {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
+
+      {loading && <ActivityIndicator size="large" color="#2f8f5b" style={{ marginTop: 20 }} />}
+
+      {error && <Text style={styles.error}>{error}</Text>}
+
+      {result && (
+        <View style={styles.resultBox}>
+          <Text style={styles.resultLabel}>Identifié : {result.label}</Text>
+          <Text style={styles.resultConfidence}>
+            Confiance : {(result.confidence * 100).toFixed(1)}%
+          </Text>
+        </View>
+      )}
+
+      {notFound && (
+        <View style={styles.warnBox}>
+          <Text style={styles.warnText}>
+            Plante identifiée mais absente de la base — normal si la photo était hors des 15 espèces.
+          </Text>
+        </View>
+      )}
+
+      {plantInfo && (
+        <View style={styles.infoBox}>
+          <Text style={styles.infoTitle}>{plantInfo.commonName}</Text>
+          <Text>💧 {plantInfo.careInstruction?.wateringFrequency ?? '—'}</Text>
+          <Text>☀️ {plantInfo.careInstruction?.sunlightNeeds ?? '—'}</Text>
+          <Text>🐱 Toxique chats : {plantInfo.toxicityInfo?.toxicToCats ? 'Oui' : 'Non'}</Text>
+        </View>
+      )}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
+  container: { flexGrow: 1, alignItems: 'center', paddingTop: 60, paddingHorizontal: 20, paddingBottom: 40, backgroundColor: '#fff' },
+  title: { fontSize: 24, fontWeight: 'bold' },
+  subtitle: { fontSize: 12, color: '#777', marginBottom: 20 },
+  muted: { color: '#777' },
+  buttonRow: { flexDirection: 'row', gap: 10, marginTop: 10 },
+  buttonPrimary: { backgroundColor: '#2f8f5b', paddingVertical: 12, paddingHorizontal: 18, borderRadius: 10 },
+  buttonSecondary: { backgroundColor: '#444', paddingVertical: 12, paddingHorizontal: 18, borderRadius: 10 },
+  buttonText: { color: '#fff', fontWeight: '600' },
+  image: { width: 220, height: 220, borderRadius: 12, marginTop: 20 },
+  error: { color: '#c0392b', marginTop: 12, textAlign: 'center' },
+  resultBox: { marginTop: 20, padding: 14, backgroundColor: '#eafaf0', borderRadius: 10, width: '100%' },
+  resultLabel: { fontWeight: 'bold', fontSize: 15 },
+  resultConfidence: { color: '#555', marginTop: 2 },
+  warnBox: { marginTop: 12, padding: 14, backgroundColor: '#fff3e0', borderRadius: 10, width: '100%' },
+  warnText: { color: '#8a5a00', fontSize: 13 },
+  infoBox: { marginTop: 12, padding: 14, backgroundColor: '#f4f4f4', borderRadius: 10, width: '100%', gap: 4 },
+  infoTitle: { fontSize: 17, fontWeight: 'bold', marginBottom: 6 },
 });

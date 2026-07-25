@@ -1,0 +1,15 @@
+0 Monstera deliciosa
+1 Maranta leuconeura
+2 Pilea peperomioides
+3 Ficus elastica
+4 Aloe vera
+5 Calathea lancifolia
+6 Zamioculcas zamiifolia
+7 Schlumbergera bridgesii
+8 Saintpaulia ionantha
+9 Dieffenbachia seguine
+10 Nephrolepis exaltata
+11 Convallaria majalis
+12 Crassula ovata
+13 Anthurium andraeanum
+14 Chamaedorea elegans
