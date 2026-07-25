@@ -42,6 +42,7 @@ Frontend/ios/
 
 # Cache Metro / Babel
 Frontend/node_modules/
+Frontend/node_modules/.cache/
 Frontend/.metro-cache/
 
 # EAS
