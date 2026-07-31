@@ -122,8 +122,7 @@ export default function HomeScreen() {
 
   const fetchPlantInfo = async (scientificName: string, confidence: number, imageUri: string) => {
     try {
-      const url = `${API_URL}/plants/search-by-scientific-name?name=${encodeURIComponent(scientificName)}`;
-      const res = await fetch(url);
+      const res = await fetch(`${API_URL}/plants/${encodeURIComponent(scientificName)}`);
       if (res.status === 404) {
         setNotFound(true);
         return;
