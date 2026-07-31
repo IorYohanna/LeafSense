@@ -17,6 +17,8 @@ import { Buffer } from 'buffer';
 
 import { LABELS } from '../constants/labels';
 import { API_URL } from '../constants/api';
+import { saveScan } from '@/services/localStorage';
+import { Link } from 'expo-router';
 
 interface CareInstruction {
   wateringFrequency?: string;
@@ -110,7 +112,7 @@ export default function HomeScreen() {
       const confidence = scores[maxIndex];
       setResult({ label, confidence });
 
-      await fetchPlantInfo(label);
+      await fetchPlantInfo(label, confidence, uri);
     } catch (e: any) {
       setError('Erreur inférence : ' + e.message);
     } finally {
@@ -118,9 +120,10 @@ export default function HomeScreen() {
     }
   };
 
-  const fetchPlantInfo = async (scientificName: string) => {
+  const fetchPlantInfo = async (scientificName: string, confidence: number, imageUri: string) => {
     try {
-      const res = await fetch(`${API_URL}/plants/${encodeURIComponent(scientificName)}`);
+      const url = `${API_URL}/plants/search-by-scientific-name?name=${encodeURIComponent(scientificName)}`;
+      const res = await fetch(url);
       if (res.status === 404) {
         setNotFound(true);
         return;
@@ -128,11 +131,19 @@ export default function HomeScreen() {
       if (!res.ok) throw new Error(`Backend a répondu ${res.status}`);
       const data: PlantDTO = await res.json();
       setPlantInfo(data);
+
+      // Sauvegarde locale automatique
+      await saveScan({
+        scientificName: data.scientificName,
+        commonName: data.commonName,
+        confidence,
+        imageUri,
+        plantInfo: data,
+      });
     } catch (e: any) {
       setError('Erreur backend : ' + e.message);
     }
   };
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -150,6 +161,9 @@ export default function HomeScreen() {
           <Text style={styles.buttonText}>🖼️ Galerie</Text>
         </TouchableOpacity>
       </View>
+      <Link href="/History" style={styles.historyLink}>
+        <Text style={styles.historyLinkText}>📋 Voir mes plantes</Text>
+      </Link>
 
       {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
 
@@ -204,4 +218,16 @@ const styles = StyleSheet.create({
   warnText: { color: '#8a5a00', fontSize: 13 },
   infoBox: { marginTop: 12, padding: 14, backgroundColor: '#f4f4f4', borderRadius: 10, width: '100%', gap: 4 },
   infoTitle: { fontSize: 17, fontWeight: 'bold', marginBottom: 6 },
+  historyLink: {
+    marginTop: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    backgroundColor: '#eee',
+    borderRadius: 8,
+  },
+  historyLinkText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+  },
 });
