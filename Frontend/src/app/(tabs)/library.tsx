@@ -1,20 +1,14 @@
-import React, { useCallback, useRef, useState } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, TextInput, StyleSheet, Alert, Animated } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { View, Text, FlatList, Image, TouchableOpacity, TextInput, StyleSheet, Alert } from 'react-native';
 import { useFocusEffect, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Swipeable } from 'react-native-gesture-handler';
-import { getSavedPlants, searchSavedPlants, deleteSavedPlant, clearSavedPlants } from '../../services/localStorage';
+import { getSavedPlants, searchSavedPlants, clearSavedPlants } from '../../services/localStorage';
 import { SavedPlant } from '../../types/scan';
 import { COLORS, RADIUS, SPACING, SHADOW } from '../../constants/theme';
-
-// Distance (px) qu'il faut swiper vers la gauche avant que le relâchement
-// n'ouvre directement le modal de confirmation.
-const SWIPE_DELETE_THRESHOLD = 100;
 
 export default function LibraryScreen() {
   const [plants, setPlants] = useState<SavedPlant[]>([]);
   const [query, setQuery] = useState('');
-  const swipeableRefs = useRef<Record<string, Swipeable | null>>({});
 
   const load = async () => setPlants(await getSavedPlants());
 
@@ -32,61 +26,27 @@ export default function LibraryScreen() {
     ]);
   };
 
-  // Déclenché quand le swipe a été relâché au-delà du seuil (Swipeable "s'ouvre").
-  const handleSwipeOpen = (item: SavedPlant) => {
-    const close = () => swipeableRefs.current[item.scientificName]?.close();
-    Alert.alert('Confirmer', `Supprimer ${item.commonName} de vos plantes ?`, [
-      { text: 'Annuler', style: 'cancel', onPress: close },
-      {
-        text: 'Supprimer',
-        style: 'destructive',
-        onPress: () => deleteSavedPlant(item.scientificName).then(load),
-      },
-    ]);
-  };
-
-  const renderRightActions = (progress: Animated.AnimatedInterpolation<number>) => {
-    const scale = progress.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0.5, 1],
-      extrapolate: 'clamp',
-    });
-    return (
-      <View style={styles.deleteAction}>
-        <Animated.View style={{ transform: [{ scale }] }}>
-          <Ionicons name="trash-outline" size={20} color={COLORS.white} />
-        </Animated.View>
-      </View>
-    );
-  };
-
   const renderItem = ({ item }: { item: SavedPlant }) => (
-    <Swipeable
-      ref={(ref) => { swipeableRefs.current[item.scientificName] = ref; }}
-      renderRightActions={renderRightActions}
-      rightThreshold={SWIPE_DELETE_THRESHOLD}
-      overshootRight={false}
-      onSwipeableOpen={() => handleSwipeOpen(item)}
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() =>
+        router.push({
+          pathname: '/(tabs)/plant-detail',
+          params: { scientificName: item.scientificName, imageUri: item.imageUri },
+        })
+      }
     >
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() =>
-          router.push({
-            pathname: '/(tabs)/plant-detail',
-            params: { scientificName: item.scientificName, imageUri: item.imageUri },
-          })
-        }
-      >
-        <Image source={{ uri: item.imageUri }} style={styles.thumb} />
-        <View style={{ flex: 1 }}>
-          <Text style={styles.cardTitle}>{item.commonName}</Text>
-          <Text style={styles.cardSub}>{item.scientificName}</Text>
-        </View>
+      <Image source={{ uri: item.imageUri }} style={styles.thumb} />
+      <View style={{ flex: 1 }}>
+        <Text style={styles.cardTitle}>{item.commonName}</Text>
+        <Text style={styles.cardSub}>{item.scientificName}</Text>
+      </View>
+      <View style={styles.actions}>
         <View style={styles.iconChip}>
           <Ionicons name="chevron-forward" size={15} color={COLORS.white} />
         </View>
-      </TouchableOpacity>
-    </Swipeable>
+      </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -118,14 +78,6 @@ export default function LibraryScreen() {
         contentContainerStyle={styles.list}
         ListEmptyComponent={<Text style={styles.empty}>{query ? 'Aucun résultat.' : 'Aucune plante enregistrée.'}</Text>}
       />
-
-      <TouchableOpacity
-        style={styles.historyFab}
-        onPress={() => router.push('/(tabs)/history')}
-        accessibilityLabel="Voir l'historique"
-      >
-        <Ionicons name="time-outline" size={22} color={COLORS.white} />
-      </TouchableOpacity>
     </View>
   );
 }
@@ -159,6 +111,7 @@ const styles = StyleSheet.create({
   thumb: { width: 50, height: 50, borderRadius: RADIUS.md },
   cardTitle: { color: COLORS.text, fontWeight: '700', fontSize: 14 },
   cardSub: { color: COLORS.muted, fontSize: 11, fontStyle: 'italic', marginTop: 2 },
+  actions: { flexDirection: 'row', gap: 8 },
   iconChip: {
     width: 30,
     height: 30,
@@ -167,25 +120,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  deleteAction: {
-    width: 70,
-    marginBottom: 10,
-    borderRadius: RADIUS.lg,
-    backgroundColor: COLORS.danger,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  iconChipGhost: { backgroundColor: COLORS.rowShade },
   empty: { color: COLORS.muted, textAlign: 'center', marginTop: 40, fontSize: 13 },
-  historyFab: {
-    position: 'absolute',
-    right: 20,
-    bottom: 20,
-    width: 50,
-    height: 50,
-    borderRadius: RADIUS.pill,
-    backgroundColor: COLORS.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...SHADOW.card,
-  },
 });
