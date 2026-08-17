@@ -2,6 +2,7 @@ package com.example.leafsense.Controller;
 
 import org.springframework.web.bind.annotation.*;
 
+import com.example.leafsense.DTO.auth.ChangePasswordDTO;
 import com.example.leafsense.DTO.auth.LoginDTO;
 import com.example.leafsense.DTO.auth.RegisterDTO;
 import com.example.leafsense.Responses.UserResponse;
@@ -25,5 +26,10 @@ public class AuthController {
     @PostMapping("/login")
     public UserResponse login(@RequestBody LoginDTO loginDTO) {
         return userService.login(loginDTO);
+    }
+
+    @PutMapping("/change-password")
+    public UserResponse changePassword(@RequestBody ChangePasswordDTO changePasswordDTO) {
+        return userService.changePassword(changePasswordDTO);
     }
 }

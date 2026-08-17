@@ -2,6 +2,7 @@ package com.example.leafsense.ServiceImpl;
 
 import org.springframework.stereotype.Service;
 
+import com.example.leafsense.DTO.auth.ChangePasswordDTO;
 import com.example.leafsense.DTO.auth.LoginDTO;
 import com.example.leafsense.DTO.auth.RegisterDTO;
 import com.example.leafsense.Entity.User;
@@ -52,6 +53,21 @@ public class UserServiceImpl implements UserService {
         }
 
         return toDTO(user);
+    }
+
+    @Override
+    public UserResponse changePassword(ChangePasswordDTO changePasswordDTO) {
+        User user = userRepository.findById(changePasswordDTO.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
+
+        if (!encoder.matches(changePasswordDTO.getOldPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Mot de passe actuel incorrect");
+        }
+
+        user.setPassword(encoder.encode(changePasswordDTO.getNewPassword()));
+        User saved = userRepository.save(user);
+
+        return toDTO(saved);
     }
 
     private UserResponse toDTO(User user) {

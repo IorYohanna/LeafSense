@@ -39,6 +39,12 @@
         {
           "enableAndroidGpuLibraries": true
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "LeafSense a besoin d'accéder à la caméra pour identifier vos plantes."
+        }
       ]
     ],
     "experiments": {

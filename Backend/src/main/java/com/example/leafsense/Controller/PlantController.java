@@ -16,9 +16,9 @@ public class PlantController {
         this.plantService = plantService;
     }
 
-    @GetMapping("/{scientificName}")
-    public PlantDTO getByScientificName(@PathVariable String scientificName) {
-        return plantService.findByScientificName(scientificName);
+    @GetMapping("/search-by-scientific-name")
+    public PlantDTO getByScientificNameQuery(@RequestParam String name) {
+        return plantService.findByScientificName(name);
     }
 
     @GetMapping
