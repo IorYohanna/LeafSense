@@ -35,6 +35,12 @@ public class Plant {
     private String temperatureRange;
     private String hardinessZone;
 
+    @Column(length = 2000) private String usages;
+    @Column(length = 2000) private String adaptationStrategies;
+    @Column(length = 2000) private String historyLegend;
+    @Column(length = 1000) private String nameHistory;
+    @Column(length = 500) private String symbolism;
+
     @OneToOne(mappedBy = "plant", cascade = CascadeType.ALL, orphanRemoval = true)
     private CareInstruction careInstruction;
 

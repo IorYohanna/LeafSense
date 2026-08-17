@@ -19,16 +19,17 @@ public class ToxicityInfo {
     private Plant plant;
 
     private boolean toxicToHumans;
-    @Column(length = 1000)
-    private String humanToxicityDetail;
+    @Column(length = 500) private String humanToxicIf;
+    @Column(length = 300) private String humanToxicParts;
+    @Column(length = 1000) private String humanToxicityDetail;
 
     private boolean toxicToDogs;
-    @Column(length = 1000)
-    private String dogToxicityDetail;
+    @Column(length = 500) private String dogToxicIf;
+    @Column(length = 300) private String dogToxicParts;
+    @Column(length = 1000) private String dogToxicityDetail;
 
     private boolean toxicToCats;
-    @Column(length = 1000)
-    private String catToxicityDetail;
-
-    private String toxicParts;
+    @Column(length = 500) private String catToxicIf;
+    @Column(length = 300) private String catToxicParts;
+    @Column(length = 1000) private String catToxicityDetail;
 }

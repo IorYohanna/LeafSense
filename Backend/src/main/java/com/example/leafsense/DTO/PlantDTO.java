@@ -24,6 +24,12 @@ public class PlantDTO {
     private String temperatureRange;
     private String hardinessZone;
 
+    private String usages;
+    private String adaptationStrategies;
+    private String historyLegend;
+    private String nameHistory;
+    private String symbolism;
+
     private CareInstructionDTO careInstruction;
     private ToxicityInfoDTO toxicityInfo;
     private List<CommonProblemDTO> commonProblems;

@@ -66,7 +66,7 @@ export default function LibraryScreen() {
           })
         }
       >
-        <View style={styles.thumbWrap}>
+        <View style={styles.imageWrap}>
           <Image source={{ uri: item.imageUri }} style={styles.thumb} />
           {isToxic && (
             <View style={styles.toxicBadge}>
@@ -75,7 +75,7 @@ export default function LibraryScreen() {
           )}
         </View>
 
-        <View style={{ flex: 1 }}>
+        <View style={styles.cardBody}>
           <Text style={styles.cardTitle} numberOfLines={1}>{item.commonName}</Text>
           <Text style={styles.cardSub} numberOfLines={1}>{item.scientificName}</Text>
 
@@ -87,7 +87,9 @@ export default function LibraryScreen() {
           )}
         </View>
 
-        <View style={styles.iconChip}>
+        {/* Rendered last (and outside the clipped imageWrap) so it paints on
+            top of both the photo and the card body without being cropped. */}
+        <View style={styles.actionBadge}>
           <Ionicons name="chevron-forward" size={15} color={COLORS.white} />
         </View>
       </TouchableOpacity>
@@ -136,15 +138,21 @@ export default function LibraryScreen() {
         ))}
       </View>
 
+      <Text style={styles.resultsLabel}>
+        {query ? `${sorted.length} résultat${sorted.length > 1 ? 's' : ''}` : 'Toutes vos plantes'}
+      </Text>
+
       <FlatList
         data={sorted}
         keyExtractor={(i) => i.scientificName}
         renderItem={renderItem}
+        numColumns={2}
+        columnWrapperStyle={styles.row}
         contentContainerStyle={styles.list}
         ListEmptyComponent={
           <View style={styles.emptyWrap}>
             <Ionicons name="leaf-outline" size={36} color={COLORS.border} />
-            <Text style={styles.empty}>{query ? 'Aucun résultat.' : 'Aucune plante enregistrée pour l\'instant.'}</Text>
+            <Text style={styles.empty}>{query ? 'Aucun résultat.' : "Aucune plante enregistrée pour l'instant."}</Text>
           </View>
         }
       />
@@ -181,7 +189,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   searchInput: { flex: 1, paddingVertical: 12, color: COLORS.text, fontSize: 14 },
-  sortRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 20, marginBottom: 14 },
+  sortRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 20, marginBottom: 12 },
   sortChip: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -196,34 +204,54 @@ const styles = StyleSheet.create({
   sortChipActive: { backgroundColor: COLORS.accent, borderColor: COLORS.accent },
   sortChipText: { fontSize: 11, color: COLORS.muted, fontWeight: '600' },
   sortChipTextActive: { color: COLORS.white },
+  resultsLabel: { color: COLORS.text, fontWeight: '700', fontSize: 14, paddingHorizontal: 20, marginBottom: 10 },
   list: { paddingHorizontal: 20, paddingBottom: SPACING.xl },
+  row: { justifyContent: 'space-between' },
   card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
+    width: '48%',
     backgroundColor: COLORS.card,
     borderRadius: RADIUS.lg,
-    padding: 10,
-    marginBottom: 10,
+    marginBottom: 16,
+    position: 'relative',
     ...SHADOW.card,
   },
-  thumbWrap: { position: 'relative' },
-  thumb: { width: 56, height: 56, borderRadius: RADIUS.md },
+  imageWrap: {
+    position: 'relative',
+  },
+  thumb: {
+    width: '100%',
+    height: 130,
+    backgroundColor: COLORS.rowShade,
+    borderTopLeftRadius: RADIUS.lg,
+    borderTopRightRadius: RADIUS.lg,
+  },
   toxicBadge: {
     position: 'absolute',
-    top: -4,
-    right: -4,
-    width: 18,
-    height: 18,
-    borderRadius: 9,
+    top: 8,
+    left: 8,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     backgroundColor: COLORS.danger,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
+  },
+  actionBadge: {
+    position: 'absolute',
+    top: 115, // 130 (thumb height) - half of the badge's own height, so it straddles the photo edge
+    right: 10,
+    width: 30,
+    height: 30,
+    borderRadius: RADIUS.pill,
+    backgroundColor: COLORS.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
     borderColor: COLORS.card,
   },
-  cardTitle: { color: COLORS.text, fontWeight: '700', fontSize: 14 },
-  cardSub: { color: COLORS.muted, fontSize: 11, fontStyle: 'italic', marginTop: 1 },
+  cardBody: { paddingHorizontal: 10, paddingTop: 18, paddingBottom: 12 },
+  cardTitle: { color: COLORS.text, fontWeight: '700', fontSize: 13 },
+  cardSub: { color: COLORS.muted, fontSize: 10, fontStyle: 'italic', marginTop: 1 },
   diffChip: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -236,14 +264,6 @@ const styles = StyleSheet.create({
   },
   diffDot: { width: 6, height: 6, borderRadius: 3 },
   diffText: { fontSize: 10, fontWeight: '700' },
-  iconChip: {
-    width: 30,
-    height: 30,
-    borderRadius: RADIUS.pill,
-    backgroundColor: COLORS.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyWrap: { alignItems: 'center', marginTop: 60, gap: 10 },
+  emptyWrap: { alignItems: 'center', marginTop: 60, gap: 10, width: '100%' },
   empty: { color: COLORS.muted, textAlign: 'center', fontSize: 13 },
 });

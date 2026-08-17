@@ -8,16 +8,22 @@ export interface CareInstruction {
   fertilizingFrequency?: string;
   propagationMethod?: string;
   repottingSeason?: string;
+  advantages?: string[];
 }
 
 export interface ToxicityInfo {
   toxicToHumans?: boolean;
+  humanToxicIf?: string;
+  humanToxicParts?: string;
   humanToxicityDetail?: string;
   toxicToDogs?: boolean;
+  dogToxicIf?: string;
+  dogToxicParts?: string;
   dogToxicityDetail?: string;
   toxicToCats?: boolean;
+  catToxicIf?: string;
+  catToxicParts?: string;
   catToxicityDetail?: string;
-  toxicParts?: string;
 }
 
 export interface CommonProblem {
@@ -40,6 +46,11 @@ export interface PlantDTO {
   maintenanceLevel?: string;
   temperatureRange?: string;
   hardinessZone?: string;
+  usages?: string;
+  adaptationStrategies?: string;
+  historyLegend?: string;
+  nameHistory?: string;
+  symbolism?: string;
   careInstruction?: CareInstruction;
   toxicityInfo?: ToxicityInfo;
   commonProblems?: CommonProblem[];

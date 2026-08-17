@@ -3,6 +3,7 @@ package com.example.leafsense.Entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.List;
 
 @Entity
 @Table(name = "care_instructions")
@@ -19,10 +20,7 @@ public class CareInstruction {
     private Plant plant;
 
     private String wateringFrequency;
-
-    @Column(length = 1000)
-    private String wateringTips;
-
+    @Column(length = 1000) private String wateringTips;
     private String sunlightNeeds;
     private String sunlightTolerance;
     private String soilType;
@@ -30,4 +28,9 @@ public class CareInstruction {
     private String fertilizingFrequency;
     private String propagationMethod;
     private String repottingSeason;
+
+    @ElementCollection
+    @CollectionTable(name = "care_advantages", joinColumns = @JoinColumn(name = "care_instruction_id"))
+    @Column(name = "advantage")
+    private List<String> advantages;
 }

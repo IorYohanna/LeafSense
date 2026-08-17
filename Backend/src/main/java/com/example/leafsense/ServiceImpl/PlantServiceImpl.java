@@ -60,6 +60,11 @@ public class PlantServiceImpl implements PlantService {
         dto.setMaintenanceLevel(plant.getMaintenanceLevel());
         dto.setTemperatureRange(plant.getTemperatureRange());
         dto.setHardinessZone(plant.getHardinessZone());
+        dto.setUsages(plant.getUsages());
+        dto.setAdaptationStrategies(plant.getAdaptationStrategies());
+        dto.setHistoryLegend(plant.getHistoryLegend());
+        dto.setNameHistory(plant.getNameHistory());
+        dto.setSymbolism(plant.getSymbolism());
 
         if (plant.getCareInstruction() != null) {
             var care = plant.getCareInstruction();
@@ -73,6 +78,7 @@ public class PlantServiceImpl implements PlantService {
             careDTO.setFertilizingFrequency(care.getFertilizingFrequency());
             careDTO.setPropagationMethod(care.getPropagationMethod());
             careDTO.setRepottingSeason(care.getRepottingSeason());
+            careDTO.setAdvantages(care.getAdvantages());
             dto.setCareInstruction(careDTO);
         }
 
@@ -85,7 +91,12 @@ public class PlantServiceImpl implements PlantService {
             toxDTO.setDogToxicityDetail(tox.getDogToxicityDetail());
             toxDTO.setToxicToCats(tox.isToxicToCats());
             toxDTO.setCatToxicityDetail(tox.getCatToxicityDetail());
-            toxDTO.setToxicParts(tox.getToxicParts());
+            toxDTO.setHumanToxicIf(tox.getHumanToxicIf());
+            toxDTO.setHumanToxicParts(tox.getHumanToxicParts());
+            toxDTO.setDogToxicIf(tox.getDogToxicIf());
+            toxDTO.setDogToxicParts(tox.getDogToxicParts());
+            toxDTO.setCatToxicIf(tox.getCatToxicIf());
+            toxDTO.setCatToxicParts(tox.getCatToxicParts());
             dto.setToxicityInfo(toxDTO);
         }
 

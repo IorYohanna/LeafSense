@@ -82,10 +82,44 @@ export default function PlantTabs({ plant }: { plant: PlantDTO }) {
 
         {tab === 'explorer' && (
           <>
-            <View style={styles.descHeader}>
-              <SectionTitle text="Description" />
-            </View>
+            <SectionTitle text="Description" />
             <Text style={styles.paragraph}>{plant.description || 'Pas de description disponible.'}</Text>
+
+            {plant.usages && (
+              <>
+                <SectionTitle text="Utilisations" />
+                <Text style={styles.paragraph}>{plant.usages}</Text>
+              </>
+            )}
+
+            {plant.adaptationStrategies && (
+              <>
+                <SectionTitle text="Stratégies d'adaptation" />
+                <Text style={styles.paragraph}>{plant.adaptationStrategies}</Text>
+              </>
+            )}
+
+            {plant.historyLegend && (
+              <>
+                <SectionTitle text="Histoire et légendes" />
+                <Text style={styles.paragraph}>{plant.historyLegend}</Text>
+              </>
+            )}
+
+            {plant.nameHistory && (
+              <>
+                <SectionTitle text="Histoire du nom" />
+                <Text style={styles.paragraph}>{plant.nameHistory}</Text>
+              </>
+            )}
+
+            {plant.symbolism && (
+              <>
+                <SectionTitle text="Symbolique" />
+                <Text style={styles.paragraph}>{plant.symbolism}</Text>
+              </>
+            )}
+
             <SectionTitle text="Climat" />
             <InfoRow label="Température" value={plant.temperatureRange} />
             <InfoRow label="Zone de rusticité" value={plant.hardinessZone} />
