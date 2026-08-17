@@ -51,9 +51,10 @@ export default function ProfileScreen() {
   };
 
   const menuItems: MenuItem[] = [
+    { icon: 'notifications-outline', label: 'Notifications', onPress: () => router.push('/(tabs)/notifications' as any) },
     { icon: 'stats-chart-outline', label: 'Statistiques', onPress: () => router.push('/(tabs)/statistics' as any) },
     { icon: 'settings-outline', label: 'Paramètres', onPress: () => router.push('/(tabs)/change-password' as any) },
-    { icon: 'trash-outline', label: 'Vider l\'historique local', onPress: handleClearHistory },
+    { icon: 'trash-outline', label: "Vider l'historique local", onPress: handleClearHistory },
     { icon: 'log-out-outline', label: 'Déconnexion', onPress: handleLogout, danger: true },
   ];
 
@@ -64,9 +65,6 @@ export default function ProfileScreen() {
         <View style={styles.avatarWrap}>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>{user?.username?.[0]?.toUpperCase() ?? '?'}</Text>
-          </View>
-          <View style={styles.avatarBadge}>
-            <Ionicons name="pencil" size={10} color={COLORS.white} />
           </View>
         </View>
       </View>
@@ -107,19 +105,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatarText: { fontSize: 26, color: COLORS.accentDim, fontWeight: '700' },
-  avatarBadge: {
-    position: 'absolute',
-    bottom: 2,
-    right: 2,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: COLORS.accent,
-    borderWidth: 2,
-    borderColor: COLORS.card,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   username: { fontSize: 17, fontWeight: '700', color: COLORS.text, marginTop: 40 },
   email: { fontSize: 12, color: COLORS.muted, marginBottom: SPACING.lg },
   menu: { width: '100%', paddingHorizontal: 20 },

@@ -45,6 +45,13 @@
         {
           "cameraPermission": "LeafSense a besoin d'accéder à la caméra pour identifier vos plantes."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#5B8C51"
+        }
       ]
     ],
     "experiments": {

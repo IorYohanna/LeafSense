@@ -27,6 +27,17 @@ export const SHADOW = {
   },
 };
 
+// Rotating palette for section headers (PlantTabs) — cycle through by index
+// so consecutive sections never repeat the same color, e.g.:
+//   SECTION_COLORS[index % SECTION_COLORS.length]
+export const SECTION_COLORS = [
+  '#7D9463', // sage (accentDim)
+  '#C99A3E', // amber
+  '#5B8AA6', // dusty teal-blue
+  '#C97B5D', // terracotta
+  '#8B6F9E', // muted plum
+];
+
 export const RADIUS = {
   sm: 8,
   md: 12,

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { PlantDTO } from '../types/plant';
-import { COLORS, RADIUS, SPACING, SHADOW } from '../constants/theme';
+import { COLORS, RADIUS, SPACING, SECTION_COLORS } from '../constants/theme';
 
 import CareSection from './CareSection';
 import CommonProblemCard from './CommonProblemCard';
@@ -21,6 +21,32 @@ const INFO_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   Température: 'thermometer-outline',
   'Zone de rusticité': 'earth-outline',
 };
+
+
+function Section({
+  title,
+  colorIndex,
+  onMenuPress,
+  children,
+}: {
+  title: string;
+  colorIndex: number;
+  onMenuPress?: () => void;
+  children: React.ReactNode;
+}) {
+  const color = SECTION_COLORS[colorIndex % SECTION_COLORS.length];
+  return (
+    <View style={styles.section}>
+      <View style={styles.sectionHeader}>
+        <View style={styles.sectionTitleRow}>
+          <View style={[styles.sectionBar, { backgroundColor: color }]} />
+          <Text style={[styles.sectionTitle, { color }]}>{title}</Text>
+        </View>
+      </View>
+      {children}
+    </View>
+  );
+}
 
 export default function PlantTabs({ plant }: { plant: PlantDTO }) {
   const [tab, setTab] = useState<TabKey>('apercu');
@@ -41,97 +67,94 @@ export default function PlantTabs({ plant }: { plant: PlantDTO }) {
         ))}
       </View>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: SPACING.xl }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: SPACING.xl }}
+        showsVerticalScrollIndicator={false}
+        style={{ marginHorizontal: -SPACING.lg }}
+      >
         {tab === 'apercu' && (
           <>
-            <SectionTitle text="Informations générales" />
-            <InfoRow label="Difficulté" value={plant.difficultyLevel} />
-            <InfoRow label="Hauteur max" value={plant.heightRange} />
-            <InfoRow label="Étalement" value={plant.spreadRange} />
-            <InfoRow label="Type de feuille" value={plant.leafType} />
-            <InfoRow label="Période de plantation" value={plant.plantingSeason} />
-            <InfoRow label="Résistance" value={plant.resistanceLevel} />
-            <InfoRow label="Entretien" value={plant.maintenanceLevel} />
+            <Section title="Informations générales" colorIndex={0}>
+              <InfoRow label="Difficulté" value={plant.difficultyLevel} />
+              <InfoRow label="Hauteur max" value={plant.heightRange} />
+              <InfoRow label="Étalement" value={plant.spreadRange} />
+              <InfoRow label="Type de feuille" value={plant.leafType} />
+              <InfoRow label="Période de plantation" value={plant.plantingSeason} />
+              <InfoRow label="Résistance" value={plant.resistanceLevel} />
+              <InfoRow label="Entretien" value={plant.maintenanceLevel} />
+            </Section>
 
             {plant.toxicityInfo && (
-              <>
-                <SectionTitle text="Toxicité" />
+              <Section title="Toxicité" colorIndex={1}>
                 <ToxicityCard toxicity={plant.toxicityInfo} />
-              </>
+              </Section>
             )}
           </>
         )}
 
         {tab === 'entretien' && (
           <>
-            <SectionTitle text="Fiche de soins" />
-            <CareSection care={plant.careInstruction} />
+            <Section title="Fiche de soins" colorIndex={0}>
+              <CareSection care={plant.careInstruction} />
+            </Section>
 
             {plant.commonProblems && plant.commonProblems.length > 0 && (
-              <>
-                <SectionTitle text="Problèmes courants" />
+              <Section title="Problèmes courants" colorIndex={1}>
                 <View style={styles.problemsGrid}>
                   {plant.commonProblems.map((p, idx) => (
                     <CommonProblemCard key={idx} problem={p} />
                   ))}
                 </View>
-              </>
+              </Section>
             )}
           </>
         )}
 
         {tab === 'explorer' && (
           <>
-            <SectionTitle text="Description" />
-            <Text style={styles.paragraph}>{plant.description || 'Pas de description disponible.'}</Text>
+            <Section title="Description" colorIndex={0}>
+              <Text style={styles.paragraph}>{plant.description || 'Pas de description disponible.'}</Text>
+            </Section>
 
             {plant.usages && (
-              <>
-                <SectionTitle text="Utilisations" />
+              <Section title="Utilisations" colorIndex={1}>
                 <Text style={styles.paragraph}>{plant.usages}</Text>
-              </>
+              </Section>
             )}
 
             {plant.adaptationStrategies && (
-              <>
-                <SectionTitle text="Stratégies d'adaptation" />
+              <Section title="Stratégies d'adaptation" colorIndex={2}>
                 <Text style={styles.paragraph}>{plant.adaptationStrategies}</Text>
-              </>
+              </Section>
             )}
 
             {plant.historyLegend && (
-              <>
-                <SectionTitle text="Histoire et légendes" />
+              <Section title="Histoire et légendes" colorIndex={3}>
                 <Text style={styles.paragraph}>{plant.historyLegend}</Text>
-              </>
+              </Section>
             )}
 
             {plant.nameHistory && (
-              <>
-                <SectionTitle text="Histoire du nom" />
+              <Section title="Histoire du nom" colorIndex={4}>
                 <Text style={styles.paragraph}>{plant.nameHistory}</Text>
-              </>
+              </Section>
             )}
 
             {plant.symbolism && (
-              <>
-                <SectionTitle text="Symbolique" />
+              <Section title="Symbolique" colorIndex={0}>
                 <Text style={styles.paragraph}>{plant.symbolism}</Text>
-              </>
+              </Section>
             )}
 
-            <SectionTitle text="Climat" />
-            <InfoRow label="Température" value={plant.temperatureRange} />
-            <InfoRow label="Zone de rusticité" value={plant.hardinessZone} />
+            <Section title="Climat" colorIndex={1}>
+              <InfoRow label="Température" value={plant.temperatureRange} />
+              <InfoRow label="Zone de rusticité" value={plant.hardinessZone} />
+            </Section>
           </>
         )}
       </ScrollView>
     </View>
   );
-}
-
-function SectionTitle({ text }: { text: string }) {
-  return <Text style={styles.sectionTitle}>{text}</Text>;
 }
 
 function InfoRow({ label, value }: { label: string; value?: string }) {
@@ -161,17 +184,31 @@ const styles = StyleSheet.create({
   tabBtnActive: { backgroundColor: COLORS.accent },
   tabLabel: { color: COLORS.muted, fontSize: 13, fontWeight: '600' },
   tabLabelActive: { color: COLORS.white },
-  sectionTitle: { color: COLORS.text, fontSize: 15, fontWeight: '700', marginTop: 18, marginBottom: 8 },
-  descHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  section: {
+    backgroundColor: COLORS.card,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.lg,
+    marginBottom: SPACING.sm,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: SPACING.sm,
+  },
+  sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 },
+  sectionBar: { width: 4, height: 16, borderRadius: 2 },
+  sectionTitle: { fontSize: 15, fontWeight: '700' },
+  sectionMenuBtn: { padding: 4 },
+
   paragraph: { color: COLORS.text, fontSize: 13, lineHeight: 20 },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.rowShade,
     borderRadius: RADIUS.md,
     padding: 12,
     marginBottom: 8,
-    ...SHADOW.card,
   },
   iconChip: {
     width: 34,
