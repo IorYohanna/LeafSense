@@ -51,8 +51,9 @@ export default function ProfileScreen() {
   };
 
   const menuItems: MenuItem[] = [
+    { icon: 'stats-chart-outline', label: 'Statistiques', onPress: () => router.push('/(tabs)/statistics' as any) },
     { icon: 'settings-outline', label: 'Paramètres', onPress: () => router.push('/(tabs)/change-password' as any) },
-    { icon: 'help-circle-outline', label: `${scanCount} plantes identifiées`, onPress: handleClearHistory },
+    { icon: 'trash-outline', label: 'Vider l\'historique local', onPress: handleClearHistory },
     { icon: 'log-out-outline', label: 'Déconnexion', onPress: handleLogout, danger: true },
   ];
 

@@ -11,7 +11,7 @@ export default function IndexScreen() {
   const [hasOnboarded, setHasOnboarded] = useState(false);
 
   useEffect(() => {
-    AsyncStorage.removeItem('hasOnboarded');
+    //AsyncStorage.removeItem('hasOnboarded');
 
     Promise.all([getSession(), getHasOnboarded()]).then(([session, onboarded]) => {
       setLoggedIn(!!session);

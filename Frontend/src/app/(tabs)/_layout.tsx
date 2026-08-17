@@ -41,6 +41,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="history" options={{ href: null }} />
       <Tabs.Screen name="change-password" options={{ href: null }} />
       <Tabs.Screen name="plant-detail" options={{ href: null }} />
+      <Tabs.Screen name="statistics" options={{ href: null }} />
     </Tabs>
   );
 }
